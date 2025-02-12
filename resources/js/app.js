@@ -25,3 +25,10 @@ createInertiaApp({
         color: '#4B5563',
     },
 });
+
+createInertiaApp({
+    resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
+    setup({ el, App, props }) {
+      createApp({ render: () => h(App, props) }).mount(el);
+    },
+  });

@@ -3,7 +3,11 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TurnosController;
 use Inertia\Inertia;
+
+
+Route::get('/turnos', [TurnosController::class, 'standby'])->name("turnos");
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
