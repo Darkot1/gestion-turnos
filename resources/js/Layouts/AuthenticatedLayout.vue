@@ -13,9 +13,7 @@ const showingNavigationDropdown = ref(false);
 <template>
     <div>
         <div class="min-h-screen bg-gray-100">
-            <nav
-                class="border-b border-gray-100 bg-white"
-            >
+            <nav class="bg-white border-b border-gray-100">
                 <!-- Primary Navigation Menu -->
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="flex h-16 justify-between">
@@ -39,6 +37,25 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    :href="'/modules'"
+                                    :active="$page.url.startsWith('/modules')"
+                                >
+                                    Módulos
+                                </NavLink>
+                                <NavLink
+                                    :href="route('shifts.pending')"
+                                    :active="route().current('shifts.pending')"
+                                >
+                                    Turnos Pendientes
+                                </NavLink>
+                                <a
+                                    :href="route('shifts.inProcess')"
+                                    target="_blank"
+                                    class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out"
+                                >
+                                    Turnos en Proceso
+                                </a>
                             </div>
                         </div>
 
@@ -145,6 +162,13 @@ const showingNavigationDropdown = ref(false);
                             :active="route().current('dashboard')"
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                       
+                        <ResponsiveNavLink
+                            :href="route('shifts.inProcess')"
+                            target="_blank"
+                        >
+                            Turnos en Proceso
                         </ResponsiveNavLink>
                     </div>
 
