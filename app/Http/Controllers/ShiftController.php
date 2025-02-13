@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\shifts;
+use App\Models\Shifts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -60,7 +60,7 @@ class ShiftController extends Controller
 
     Auth::logout();
 
-    return response()->json(['message' => "Turno generado: $formattedNumber"], 201);
+    return response()->json(['message' => "Turno generado: $formattedNumber",], 201);
 }
 
 

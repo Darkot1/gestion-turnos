@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class shifts extends Model
+class Shifts extends Model
 {
     use HasFactory;
 
@@ -20,7 +20,7 @@ class shifts extends Model
 
     public function module()
     {
-        return $this->belongsTo(modules::class);
+        return $this->belongsTo(Module::class);
     }
 
     public function user() {

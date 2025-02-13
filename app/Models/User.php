@@ -51,6 +51,6 @@ class User extends Authenticatable
 
     public function module()
     {
-        return $this->hasMany(modules::class);
+        return $this->hasMany(module::class);
     }
 }
