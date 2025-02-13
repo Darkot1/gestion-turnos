@@ -37,6 +37,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [ModuleController::class, 'store'])->name('modules.store');
         Route::put('/{module}', [ModuleController::class, 'update'])->name('modules.update');
     });
+
+    Route::get('/shifts/pending', [ShiftController::class, 'showPendingShifts'])
+        ->name('shifts.pending');
+    Route::put('/shifts/{shift}/status', [ShiftController::class, 'updateShiftStatus'])
+        ->name('shifts.updateStatus');
 });
+
+// Ruta para invitados
+Route::get('/shifts/in-process', [ShiftController::class, 'showInProcessShifts'])
+    ->name('shifts.inProcess');
 
 require __DIR__.'/auth.php';

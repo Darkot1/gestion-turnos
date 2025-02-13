@@ -15,7 +15,6 @@ class ShiftController extends Controller
     public function index()
     {
         return Inertia::render('ShiftsIndex');
-
     }
 
     /**
@@ -30,39 +29,38 @@ class ShiftController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'type' => 'required|in:muestras,resultados',
-    ]);
+    {
+        $validated = $request->validate([
+            'type' => 'required|in:muestras,resultados',
+        ]);
 
-    $today = now()->toDateString();
+        $today = now()->toDateString();
 
-    $lastShift = shifts::where('type', $validated['type'])
-        ->whereDate('date', $today)
-        ->latest('number')
-        ->first();
+        $lastShift = shifts::where('type', $validated['type'])
+            ->whereDate('date', $today)
+            ->latest('number')
+            ->first();
 
-    $lastNumber = $lastShift ? (int) preg_replace('/\D/', '', $lastShift->number) : 0;
+        $lastNumber = $lastShift ? (int) preg_replace('/\D/', '', $lastShift->number) : 0;
 
-    $newNumber = $lastNumber + 1;
+        $newNumber = $lastNumber + 1;
 
-    // Formatear el número como M-001 o R-001
-    $formattedNumber = ($validated['type'] == 'muestras' ? 'M-' : 'R-') . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        // Formatear el número como M-001 o R-001
+        $formattedNumber = ($validated['type'] == 'muestras' ? 'M-' : 'R-') . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
 
-    $shift = Shifts::create([
-        'type' => $validated['type'],
-        'module_id' => null,
-        'user_id' => Auth::user()->id,
-        'number' => $formattedNumber,
-        'status' => 'espera',
-        'date' => now()->toDateString(),
-    ]);
+        $shift = Shifts::create([
+            'type' => $validated['type'],
+            'module_id' => null,
+            'user_id' => Auth::user()->id,
+            'number' => $formattedNumber,
+            'status' => 'espera',
+            'date' => now()->toDateString(),
+        ]);
 
-    Auth::logout();
+        Auth::logout();
 
-    return response()->json(['message' => "Turno generado: $formattedNumber",], 201);
-}
-
+        return response()->json(['message' => "Turno generado: $formattedNumber",], 201);
+    }
 
     /**
      * Display the specified resource.
@@ -81,18 +79,78 @@ class ShiftController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
         //
+    }
+
+    public function showPendingShifts()
+    {
+        $shifts = $this->getPendingAndInProcessShifts();
+        $firstShifts = $this->getFirstShiftsOfEachType($shifts);
+
+        return Inertia::render('Shifts/PendingShifts', [
+            'shifts' => $shifts,
+            'firstShifts' => $firstShifts
+        ]);
+    }
+
+    private function getPendingAndInProcessShifts()
+    {
+        return Shifts::whereIn('status', ['espera', 'en proceso'])
+            ->with(['module', 'user'])
+            ->orderBy('date')
+            ->orderBy('created_at')
+            ->orderBy('number')
+            ->get();
+    }
+
+    private function getFirstShiftsOfEachType($shifts)
+    {
+        $firstShifts = $shifts->where('status', 'espera')
+            ->groupBy('type')
+            ->map(fn($group) => $group->first());
+
+        return [
+            'muestras' => $firstShifts->get('muestras'),
+            'resultados' => $firstShifts->get('resultados')
+        ];
+    }
+
+    public function showInProcessShifts()
+    {
+        $shifts = Shifts::where('status', 'en proceso')
+            ->with(['module', 'user'])
+            ->orderBy('date')
+            ->orderBy('number')
+            ->get();
+
+        return Inertia::render('Shifts/InProcessShifts', [
+            'shifts' => $shifts
+        ]);
+    }
+
+    public function updateShiftStatus(Request $request, Shifts $shift)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:en proceso,atendido,cancelado',
+            'module_id' => 'required|exists:modules,id'
+        ]);
+
+        try {
+            $shift->update($validated);
+
+            return response()->json([
+                'message' => 'Estado actualizado correctamente',
+                'shift' => $shift->load('module', 'user')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar el estado',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

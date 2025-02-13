@@ -13,10 +13,20 @@ class ModuleController extends Controller
      */
     public function index()
     {
-        $modules = Module::all();
-        return Inertia::render('Modules/Index', [
-            'modules' => $modules
-        ]);
+        $modules = $this->getActiveAvailableModules();
+
+        return request()->wantsJson()
+            ? response()->json(['modules' => $modules])
+            : Inertia::render('Modules/Index', ['modules' => $modules]);
+    }
+
+    private function getActiveAvailableModules()
+    {
+        return Module::where('status', 'active')
+            ->whereDoesntHave('shifts', function ($query) {
+                $query->where('status', 'en proceso');
+            })
+            ->get();
     }
 
     /**
@@ -32,18 +42,17 @@ class ModuleController extends Controller
      */
     public function store(Request $request)
     {
-            $validated = $request->validate([
-                'number' => 'required|string|unique:modules,number',
-                'status' => 'required|in:active,inactive,busy',
-            ]);
+        $validated = $request->validate([
+            'number' => 'required|string|unique:modules,number',
+            'status' => 'required|in:active,inactive,busy',
+        ]);
 
-            $module = Module::create($validated);
+        $module = Module::create($validated);
 
-            return response()->json([
-                'message' => 'Módulo agregado correctamente',
-                'module' => $module
-            ], 201);
-
+        return response()->json([
+            'message' => 'Módulo agregado correctamente',
+            'module' => $module
+        ], 201);
     }
 
     /**
@@ -90,5 +99,4 @@ class ModuleController extends Controller
     /**
      * Get all modules.
      */
-
 }

@@ -20,5 +20,11 @@ class Module extends Model
         return $this->hasMany(Shifts::class);
     }
 
+    public function hasActiveShift()
+    {
+        return $this->shifts()
+            ->whereIn('status', ['espera', 'en proceso'])
+            ->exists();
+    }
 
 }
