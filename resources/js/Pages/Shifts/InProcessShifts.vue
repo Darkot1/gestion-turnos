@@ -1,60 +1,85 @@
 <template>
-    <div class="min-h-screen bg-blue-50">
-        <div class="container mx-auto p-8">
-            <!-- Header con reloj -->
-            <div class="text-right mb-6">
-                <div class="text-6xl font-digital text-blue-900">{{ currentTime }}</div>
-            </div>
-
-            <div class="flex gap-8 h-screen">
-                <!-- Columna izquierda: Turnos anteriores -->
-                <div class="w-1/3 bg-white rounded-xl shadow-xl p-8">
-                    <h2 class="text-4xl font-bold mb-8 text-blue-800">Turnos Anteriores</h2>
-                    <div class="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-                        <div v-for="shift in previousShifts" :key="shift.id"
-                            class="p-6 rounded-xl shadow-md transition-all bg-white border-l-8"
-                            :class="getTypeColor(shift.type)">
-                            <h3 class="text-4xl font-bold mb-2">Turno {{ shift.number }}</h3>
-                            <div class="space-y-3">
-                                <p class="text-3xl text-gray-700">{{ shift.user.name }}</p>
-                                <p class="text-3xl font-semibold text-blue-800">
-                                    Módulo {{ shift.module?.number }}
-                                </p>
-                                <p class="text-2xl font-medium" :class="getTypeTextColor(shift.type)">
-                                    {{ shift.type === 'muestras' ? 'Muestras' : 'Resultados' }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Columna derecha: Turno en llamada -->
-                <div class="w-2/3">
-                    <div v-if="currentShift"
-                        class="h-[calc(100vh-120px)] rounded-xl shadow-xl p-16 flex flex-col justify-center items-center bg-white"
-                        :class="getTypeBgColor(currentShift.type)">
-                        <div class="text-center animate-fade-in">
-                            <h2 class="text-9xl font-bold mb-12 text-blue-900">
-                                Turno {{ currentShift.number }}
-                            </h2>
-                            <p class="text-7xl mb-10 text-gray-800">
-                                {{ currentShift.user.name }}
-                            </p>
-                            <p class="text-8xl font-bold mb-8 text-blue-800">
-                                Módulo {{ currentShift.module?.number }}
-                            </p>
-                            <p class="text-5xl font-medium" :class="getTypeTextColor(currentShift.type)">
-                                {{ currentShift.type === 'muestras' ? 'Muestras' : 'Resultados' }}
-                            </p>
-                        </div>
-                    </div>
-                    <div v-else class="h-[calc(100vh-120px)] bg-white rounded-xl shadow-xl p-16 flex justify-center items-center">
-                        <p class="text-5xl text-gray-400">No hay turnos en llamada</p>
-                    </div>
-                </div>
-            </div>
+  <!-- Nav  -->
+  <nav class="bg-gradient-to-r from-blue-500 to-indigo-600 shadow-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-20 items-center">
+        <div class="flex items-center space-x-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+          </svg>
+          <div>
+            <h1 class="text-3xl font-bold text-white">Clínica ESD</h1>
+            <p class="text-blue-100 text-sm">Sistema de Turnos</p>
+          </div>
         </div>
+        <div class="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-xl border border-white/20">
+          <div class="text-4xl font-digital font-bold text-white">
+            {{ currentTime }}
+          </div>
+        </div>
+      </div>
     </div>
+  </nav>
+
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6 flex">
+    <!-- Panel Izquierdo: Turnos Anteriores -->
+    <div class="w-1/2 p-6">
+      <div class="w-full max-w-3xl mx-auto">
+        <h2 class="text-4xl font-extrabold text-gray-800 mb-8">Turnos Anteriores</h2>
+
+        <div class="space-y-4">
+          <div v-for="shift in previousShifts" :key="shift.id"
+            class="w-full group relative px-8 py-6 overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300">
+            <div class="relative flex items-center justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <span class="text-5xl font-bold text-gray-800">{{ shift.number }}</span>
+                <div class="space-y-1">
+                  <span :class="`inline-block px-4 py-2 rounded-xl text-sm font-medium ${
+                    shift.type === 'muestras' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
+                  }`">
+                    {{ shift.type === 'muestras' ? 'Muestras' : 'Resultados' }}
+                  </span>
+                  <p class="text-lg text-gray-600">{{ shift.user.name }}</p>
+                </div>
+              </div>
+              <div class="text-2xl font-bold text-blue-600">
+                Módulo {{ shift.module?.number }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Derecho: Turno en Llamada -->
+    <div class="w-1/2 p-6 flex items-center justify-center">
+      <div v-if="currentShift" class="w-full max-w-2xl text-center space-y-8">
+        <h2 class="text-4xl font-extrabold text-gray-800">Turno en Llamada</h2>
+
+        <div class="w-full group relative p-12 overflow-hidden rounded-2xl bg-white shadow-xl">
+          <div class="space-y-6">
+            <div class="animate-pulse text-9xl font-bold text-blue-600">
+              {{ currentShift.number }}
+            </div>
+
+            <div :class="`inline-block px-6 py-3 rounded-xl text-2xl font-medium ${
+              currentShift.type === 'muestras' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
+            }`">
+              {{ currentShift.type === 'muestras' ? 'Muestras' : 'Resultados' }}
+            </div>
+
+            <div class="text-3xl text-gray-700">
+              {{ currentShift.user.name }}
+            </div>
+
+            <div class="text-5xl font-bold text-blue-600">
+              Módulo {{ currentShift.module?.number }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -71,7 +96,7 @@ const currentShift = ref(null);
 const previousShifts = computed(() => {
     return [...props.shifts]
         .filter(shift => shift.id !== currentShift.value?.id)
-        .slice(-8);
+        .slice(-6);
 });
 
 const currentTime = ref('');
@@ -84,26 +109,10 @@ const updateTime = () => {
     });
 };
 
-
 onMounted(() => {
     updateTime();
     setInterval(updateTime, 1000);
 });
-
-const getTypeColor = (type) => ({
-    'muestras': 'border-purple-500',
-    'resultados': 'border-blue-500'
-}[type] || 'border-gray-400');
-
-const getTypeTextColor = (type) => ({
-    'muestras': 'text-purple-600',
-    'resultados': 'text-blue-600'
-}[type] || 'text-gray-600');
-
-const getTypeBgColor = (type) => ({
-    'muestras': 'bg-purple-50',
-    'resultados': 'bg-blue-50'
-}[type] || 'bg-white');
 
 const speak = (text) => {
     const synth = window.speechSynthesis;
@@ -124,11 +133,7 @@ const speak = (text) => {
     };
 
     loadVoices().then(voices => {
-
-        const spanishVoice = voices.find(voice =>
-            voice.lang.includes('es-CO')
-        );
-
+        const spanishVoice = voices.find(voice => voice.lang.includes('es-CO'));
         const utterance = new SpeechSynthesisUtterance(text);
         if (spanishVoice) {
             utterance.voice = spanishVoice;
@@ -142,22 +147,18 @@ const speak = (text) => {
     });
 };
 
-
-// Detectar cambios en los turnos
-watch(() => props.shifts, (newShifts, oldShifts) => {
+watch(() => props.shifts, (newShifts) => {
     if (!newShifts.length) {
         currentShift.value = null;
         return;
     }
 
-    // Encontrar el turno más reciente en proceso
     const latestProcessShift = [...newShifts]
         .reverse()
         .find(shift => shift.status === 'en proceso');
 
     if (latestProcessShift && (!currentShift.value || currentShift.value.id !== latestProcessShift.id)) {
         currentShift.value = latestProcessShift;
-
         speak(`Turno ${latestProcessShift.number}, ${latestProcessShift.user.name}, por favor dirigirse al módulo ${latestProcessShift.module?.number}`);
     }
 }, { deep: true, immediate: true });
@@ -165,9 +166,10 @@ watch(() => props.shifts, (newShifts, oldShifts) => {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap');
 
 .font-digital {
-    font-family: 'Roboto', monospace;
+    font-family: 'Roboto Mono', monospace;
 }
 
 .animate-fade-in {
@@ -186,21 +188,20 @@ watch(() => props.shifts, (newShifts, oldShifts) => {
 }
 
 ::-webkit-scrollbar {
-    width: 16px;
+    width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f5f9;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #94a3b8;
+    background: rgba(255, 255, 255, 0.3);
     border-radius: 8px;
-    border: 3px solid #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
+    background: rgba(255, 255, 255, 0.4);
 }
 </style>

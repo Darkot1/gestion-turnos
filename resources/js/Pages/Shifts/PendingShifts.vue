@@ -1,84 +1,104 @@
 <template>
-    <AuthenticatedLayout>
-        <div class="container mx-auto p-6">
-            <h1 class="text-3xl font-bold mb-6">Gestión de Turnos</h1>
+  <AuthenticatedLayout>
+    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+      <div class="max-w-7xl mx-auto">
+        <h1 class="text-4xl font-extrabold text-gray-800 mb-8">Gestión de Turnos</h1>
 
-            <div v-if="message.text"
-                :class="[
-                    'mb-4 p-4 rounded-lg',
-                    message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                ]">
-                {{ message.text }}
-            </div>
-
-            <!-- Turnos en Espera -->
-            <div class="mb-8">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-bold">Turnos en Espera</h2>
-                    <div class="flex gap-2">
-                        <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">
-                            Muestras: {{ waitingShifts.filter(s => s.type === 'muestras').length }}
-                        </span>
-                        <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">
-                            Resultados: {{ waitingShifts.filter(s => s.type === 'resultados').length }}
-                        </span>
-                    </div>
-                </div>
-                <div v-if="!waitingShifts.length" class="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
-                    No hay turnos en espera
-                </div>
-                <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- mostrar los primer turnos de cada tipo -->
-                    <template v-for="shift in waitingShifts" :key="shift.id">
-                        <ShiftCard
-                            v-if="getIsFirstInQueue(shift)"
-                            :shift="shift"
-                            :available-modules="availableModules"
-                            :selected-module="selectedModule"
-                            :is-loading="isLoading"
-                            :is-first-in-queue="true"
-                            @update="handleUpdate"
-                        />
-                    </template>
-                    <template v-for="shift in waitingShifts" :key="shift.id">
-                        <ShiftCard
-                            v-if="!getIsFirstInQueue(shift)"
-                            :shift="shift"
-                            :available-modules="availableModules"
-                            :selected-module="selectedModule"
-                            :is-loading="isLoading"
-                            :is-first-in-queue="false"
-                            @update="handleUpdate"
-                        />
-                    </template>
-                </div>
-            </div>
-
-            <!-- Turnos en Proceso -->
-            <div>
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-bold">Turnos en Proceso</h2>
-                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                        {{ inProcessShifts.length }} turnos
-                    </span>
-                </div>
-                <div v-if="!inProcessShifts.length" class="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
-                    No hay turnos en proceso
-                </div>
-                <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <ShiftCard
-                        v-for="shift in inProcessShifts"
-                        :key="shift.id"
-                        :shift="shift"
-                        :available-modules="availableModules"
-                        :selected-module="selectedModule"
-                        :is-loading="isLoading"
-                        @update="handleUpdate"
-                    />
-                </div>
-            </div>
+        <!-- Mensajes de estado -->
+        <div v-if="message.text"
+          class="mb-6 p-4 rounded-xl shadow-md transition-all duration-300"
+          :class="message.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'"
+        >
+          {{ message.text }}
         </div>
-    </AuthenticatedLayout>
+
+        <!-- Turnos en Espera -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Turnos en Espera</h2>
+            <div class="flex gap-3">
+              <span class="px-4 py-2 bg-yellow-50 text-yellow-700 rounded-xl font-medium">
+                Muestras: {{ waitingShifts.filter(s => s.type === 'muestras').length }}
+              </span>
+              <span class="px-4 py-2 bg-yellow-50 text-yellow-700 rounded-xl font-medium">
+                Resultados: {{ waitingShifts.filter(s => s.type === 'resultados').length }}
+              </span>
+            </div>
+          </div>
+
+          <div v-if="!waitingShifts.length"
+            class="flex items-center justify-center h-48 bg-gray-50 rounded-xl">
+            <p class="text-gray-500 text-lg">No hay turnos en espera</p>
+          </div>
+
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Primeros en la cola -->
+            <template v-for="shift in waitingShifts" :key="shift.id">
+              <div v-if="getIsFirstInQueue(shift)"
+                class="relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 shadow-md border-2 border-blue-200">
+                <div class="absolute top-3 right-3">
+                  <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                    Próximo
+                  </span>
+                </div>
+                <ShiftCard
+                  :shift="shift"
+                  :available-modules="availableModules"
+                  :selected-module="selectedModule"
+                  :is-loading="isLoading"
+                  :is-first-in-queue="true"
+                  @update="handleUpdate"
+                />
+              </div>
+            </template>
+
+            <!-- Resto de turnos -->
+            <template v-for="shift in waitingShifts" :key="shift.id">
+              <div v-if="!getIsFirstInQueue(shift)"
+                class="bg-white rounded-xl p-6 shadow-md border border-gray-100">
+                <ShiftCard
+                  :shift="shift"
+                  :available-modules="availableModules"
+                  :selected-module="selectedModule"
+                  :is-loading="isLoading"
+                  :is-first-in-queue="false"
+                  @update="handleUpdate"
+                />
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Turnos en Proceso -->
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Turnos en Proceso</h2>
+            <span class="px-4 py-2 bg-blue-50 text-blue-700 rounded-xl font-medium">
+              {{ inProcessShifts.length }} turnos
+            </span>
+          </div>
+
+          <div v-if="!inProcessShifts.length"
+            class="flex items-center justify-center h-48 bg-gray-50 rounded-xl">
+            <p class="text-gray-500 text-lg">No hay turnos en proceso</p>
+          </div>
+
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-for="shift in inProcessShifts" :key="shift.id"
+              class="bg-gradient-to-br from-emerald-50 to-blue-50 rounded-xl p-6 shadow-md border-2 border-emerald-200">
+              <ShiftCard
+                :shift="shift"
+                :available-modules="availableModules"
+                :selected-module="selectedModule"
+                :is-loading="isLoading"
+                @update="handleUpdate"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </AuthenticatedLayout>
 </template>
 
 <script setup>
@@ -127,8 +147,13 @@ const loadModules = async () => {
     try {
         isLoading.value = true;
         const response = await axios.get('/modules');
-        // matener los módulos seleccionados en los turnos en espera
+
+        if (!response.data || !response.data.modules) {
+            throw new Error('Formato de respuesta inválido');
+        }
+
         const selectedModuleIds = Object.values(selectedModule.value);
+
         availableModules.value = response.data.modules.filter(module =>
             module.status === 'active' &&
             (!shifts.value.some(shift =>
@@ -136,6 +161,8 @@ const loadModules = async () => {
                 ['espera', 'en proceso'].includes(shift.status)
             ) || selectedModuleIds.includes(module.id))
         );
+
+        console.log('Módulos cargados:', availableModules.value);
     } catch (error) {
         console.error('Error cargando módulos:', error);
         message.value = {

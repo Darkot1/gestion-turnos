@@ -13,28 +13,17 @@ class ModuleController extends Controller
      */
     public function index()
     {
-        $modules = $this->getActiveAvailableModules();
+        $modules = Module::all();
 
-        return request()->wantsJson()
-            ? response()->json(['modules' => $modules])
-            : Inertia::render('Modules/Index', ['modules' => $modules]);
-    }
+        if (request()->wantsJson()) {
+            return response()->json([
+                'modules' => $modules
+            ]);
+        }
 
-    private function getActiveAvailableModules()
-    {
-        return Module::where('status', 'active')
-            ->whereDoesntHave('shifts', function ($query) {
-                $query->where('status', 'en proceso');
-            })
-            ->get();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return Inertia::render('Modules/Index', [
+            'modules' => $modules
+        ]);
     }
 
     /**
@@ -44,15 +33,52 @@ class ModuleController extends Controller
     {
         $validated = $request->validate([
             'number' => 'required|string|unique:modules,number',
-            'status' => 'required|in:active,inactive,busy',
+            'status' => 'sometimes|in:active,inactive,busy',
         ]);
+
+       
+        $validated['status'] = $validated['status'] ?? 'active';
 
         $module = Module::create($validated);
 
-        return response()->json([
-            'message' => 'Módulo agregado correctamente',
-            'module' => $module
-        ], 201);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Módulo creado correctamente',
+                'module' => $module
+            ]);
+        }
+
+        return back()->with('message', 'Módulo creado correctamente');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Module $module)
+    {
+        $validated = $request->validate([
+            'number' => 'required|string|unique:modules,number,' . $module->id,
+            'status' => 'required|in:active,inactive,busy',
+        ]);
+
+        $module->update($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Módulo actualizado correctamente',
+                'module' => $module
+            ]);
+        }
+
+        return back()->with('message', 'Módulo actualizado correctamente');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
     }
 
     /**
@@ -72,31 +98,10 @@ class ModuleController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Module $module)
-    {
-        $validated = $request->validate([
-            'status' => 'required|in:active,inactive,busy',
-        ]);
-
-        $module->update($validated);
-
-        return response()->json([
-            'message' => 'Estado actualizado correctamente',
-            'module' => $module
-        ]);
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
         //
     }
-
-    /**
-     * Get all modules.
-     */
 }
