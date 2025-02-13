@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -13,6 +15,12 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+Route::get('/register-user', [UserController::class,'index']);
+Route::post('/users',[UserController::class,'store']);
+
+Route::get('/shifts', [ShiftController::class, 'index'])->name('shifts.index');
+Route::post('/shifts', [ShiftController::class, 'store']);
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
