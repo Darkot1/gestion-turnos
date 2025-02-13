@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -14,9 +15,11 @@ return new class extends Migration
         Schema::create('shifts', function (Blueprint $table) {
             $table->id();
             $table->enum('type', ['muestras', 'resultados']);
-            $table->foreignId('module_id')->constrained()->cascadeOnDelete();
-            $table->integer('number');
+            $table->foreignId('module_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('number');
             $table->enum('status', ['espera', 'atendido', 'en proceso', 'cancelado'])->default('espera');
+            $table->date('date');
             $table->timestamps();
         });
     }
