@@ -1,5 +1,6 @@
 <template>
-    <div class="container mx-auto p-6">
+    <AuthenticatedLayout>
+        <div class="container mx-auto p-6">
         <h1 class="text-3xl font-bold mb-6">Gestión de Módulos</h1>
 
         <form @submit.prevent="addModule" class="mb-6">
@@ -59,12 +60,13 @@
             </li>
         </ul>
     </div>
+    </AuthenticatedLayout>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
-
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 const props = defineProps({
     modules: {
         type: Array,

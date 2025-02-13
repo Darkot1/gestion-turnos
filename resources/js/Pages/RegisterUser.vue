@@ -46,7 +46,8 @@ const registerUser = async () => {
 </script>
 
 <template>
-    <div class="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+    <guest-layout>
+        <div class="flex items-center justify-center min-h-screen bg-gray-100 p-6">
         <div class="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-lg flex flex-col md:flex-row">
             <!-- Formulario -->
             <div class="w-full md:w-2/3 p-4 flex flex-col justify-center">
@@ -80,4 +81,5 @@ const registerUser = async () => {
             </div>
         </div>
     </div>
+    </guest-layout>
 </template>

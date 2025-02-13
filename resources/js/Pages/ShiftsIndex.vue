@@ -1,5 +1,6 @@
 <template>
-    <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
+    <guest-layout>
+        <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
         <h1 class="text-3xl font-bold mb-6">Selecciona el tipo de turno</h1>
 
         <div class="flex space-x-4">
@@ -20,12 +21,13 @@
         <p v-if="successMessage" class="text-green-600 font-semibold mt-4">{{ successMessage }}</p>
         <p v-if="errorMessage" class="text-red-600 font-semibold mt-4">{{ errorMessage }}</p>
     </div>
+    </guest-layout>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
-import { router } from "@inertiajs/vue3"; 
+import { router } from "@inertiajs/vue3";
 
 const successMessage = ref("");
 const errorMessage = ref("");
