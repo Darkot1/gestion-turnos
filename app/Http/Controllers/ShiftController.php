@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shifts;
+use App\Services\TicketPrinterService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -10,6 +11,13 @@ use Inertia\Inertia;
 
 class ShiftController extends Controller
 {
+    protected $printerService;
+
+    public function __construct(TicketPrinterService $printerService)
+    {
+        $this->printerService = $printerService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -58,9 +66,17 @@ class ShiftController extends Controller
             'date' => now()->toDateString(),
         ]);
 
-        Auth::logout();
-
-        return response()->json(['message' => "Turno generado: $formattedNumber",], 201);
+        try {
+            $this->printerService->printShiftTicket($shift);
+            Auth::logout();
+            return response()->json(['message' => "Turno generado: $formattedNumber"], 201);
+        } catch (\Exception $e) {
+            Log::error('Error al imprimir: ' . $e->getMessage());
+            return response()->json([
+                'message' => "Turno generado: $formattedNumber",
+                'print_error' => 'Error al imprimir el ticket'
+            ], 201);
+        }
     }
 
     /**
@@ -143,7 +159,7 @@ class ShiftController extends Controller
 
         try {
             $shift->update($validated);
-            $shift->load(['module', 'user']); 
+            $shift->load(['module', 'user']);
 
             return response()->json([
                 'message' => 'Estado actualizado correctamente',
