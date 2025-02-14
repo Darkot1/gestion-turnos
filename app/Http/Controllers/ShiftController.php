@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Shifts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ShiftController extends Controller
@@ -124,8 +125,9 @@ class ShiftController extends Controller
         $shifts = Shifts::where('status', 'en proceso')
             ->with(['module', 'user'])
             ->orderBy('date')
-            ->orderBy('number')
+            ->orderBy('updated_at', 'desc')
             ->get();
+
 
         return Inertia::render('Shifts/InProcessShifts', [
             'shifts' => $shifts
@@ -141,10 +143,11 @@ class ShiftController extends Controller
 
         try {
             $shift->update($validated);
+            $shift->load(['module', 'user']); 
 
             return response()->json([
                 'message' => 'Estado actualizado correctamente',
-                'shift' => $shift->load('module', 'user')
+                'shift' => $shift
             ]);
         } catch (\Exception $e) {
             return response()->json([
