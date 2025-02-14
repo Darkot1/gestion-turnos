@@ -67,7 +67,9 @@ class ShiftController extends Controller
         ]);
 
         try {
+            
             $this->printerService->printShiftTicket($shift);
+
             Auth::logout();
             return response()->json(['message' => "Turno generado: $formattedNumber"], 201);
         } catch (\Exception $e) {

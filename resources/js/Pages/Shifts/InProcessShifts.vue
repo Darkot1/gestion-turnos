@@ -21,7 +21,7 @@
     </div>
   </nav>
 
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8 flex">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8 flex ">
     <!-- Panel Izquierdo: Turnos Anteriores -->
     <div class="w-1/2 p-8">
       <div class="w-full max-w-4xl mx-auto">
@@ -47,7 +47,7 @@
     </div>
 
     <!-- Panel Derecho: Turno en Llamada -->
-    <div class="w-1/2 p-8 flex items-center justify-center">
+    <div class="w-1/2 p-8 flex items-center justify-center ">
       <div v-if="currentShift" class="w-full max-w-3xl text-center space-y-12">
         <h2 class="text-6xl font-extrabold text-gray-800">Turno en Llamada</h2>
 
