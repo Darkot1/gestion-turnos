@@ -47,39 +47,46 @@ const registerUser = async () => {
 
 <template>
     <guest-layout>
-        <div class="flex items-center justify-center min-h-screen bg-gray-100 p-6">
-        <div class="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-lg flex flex-col md:flex-row">
-            <!-- Formulario -->
-            <div class="w-full md:w-2/3 p-4 flex flex-col justify-center">
-                <label class="block mb-3 text-lg font-semibold">Nombre Completo</label>
-                <input v-model="name" type="text"
-                    class="w-full p-4 border rounded-xl text-lg focus:outline-none focus:ring-4 focus:ring-blue-400" />
+        <div class="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-500 p-6">
+            <div class="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-lg flex flex-col md:flex-row">
+                <!-- Formulario -->
+                <div class="w-full md:w-2/3 p-4 flex flex-col justify-center">
+                    <label class="block mb-3 text-lg font-semibold text-gray-700">Nombre Completo</label>
+                    <input v-model="name" type="text"
+                        class="w-full p-4 border rounded-xl text-lg focus:outline-none focus:ring-4 focus:ring-blue-400" />
 
-                <label class="block mt-5 mb-3 text-lg font-semibold">Numero de identidad</label>
-                <input v-model="document" type="text"
-                    class="w-full p-4 border rounded-xl text-lg text-center bg-gray-200 cursor-default" readonly />
+                    <label class="block mt-5 mb-3 text-lg font-semibold text-gray-700">Número de Identidad</label>
+                    <input v-model="document" type="text"
+                        class="w-full p-4 border rounded-xl text-lg text-center bg-gray-200 cursor-default" readonly />
 
-                <button @click="registerUser" class="mt-8 w-full bg-blue-500 text-white p-4 rounded-xl text-xl font-bold">
-                    Pedir Turno
-                </button>
-            </div>
+                    <button @click="registerUser" class="mt-8 w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded-xl text-xl font-bold hover:from-blue-600 hover:to-purple-600 transition">
+                        Pedir Turno
+                    </button>
 
-            <!-- Teclado Numerico -->
-            <div class="w-full md:w-1/3 flex flex-col items-center justify-center">
-                <div class="grid grid-cols-3 gap-2">
-                    <button v-for="num in keys.slice(0, 9)" :key="num" @click="addNumber(num)"
-                        class="p-4 text-lg font-bold bg-gray-300 rounded-lg hover:bg-gray-400 active:bg-gray-500 transition">
-                        {{ num }}
-                    </button>
-                    <button @click="addNumber('0')" class="p-4 text-lg font-bold bg-gray-300 rounded-lg col-span-2 hover:bg-gray-400 active:bg-gray-500 transition">
-                        0
-                    </button>
-                    <button @click="deleteNumber" class="p-4 text-lg font-bold bg-red-500 text-white rounded-lg hover:bg-red-900 active:bg-red-900 transition">
-                        Borrar
-                    </button>
+                    <div v-if="error" class="mt-4 text-red-500">{{ error }}</div>
+                    <div v-if="success" class="mt-4 text-green-500">{{ success }}</div>
+                </div>
+
+                <!-- Teclado Numérico -->
+                <div class="w-full md:w-1/3 flex flex-col items-center justify-center">
+                    <div class="grid grid-cols-3 gap-2">
+                        <button v-for="num in keys.slice(0, 9)" :key="num" @click="addNumber(num)"
+                            class="p-4 text-lg font-bold bg-gray-300 rounded-lg hover:bg-gray-400 active:bg-gray-500 transition">
+                            {{ num }}
+                        </button>
+                        <button @click="addNumber('0')" class="p-4 text-lg font-bold bg-gray-300 rounded-lg col-span-2 hover:bg-gray-400 active:bg-gray-500 transition">
+                            0
+                        </button>
+                        <button @click="deleteNumber" class="p-4 text-lg font-bold bg-red-500 text-white rounded-lg hover:bg-red-600 active:bg-red-700 transition">
+                            Borrar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     </guest-layout>
 </template>
+
+<style scoped>
+/* Add your styles here */
+</style>

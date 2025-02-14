@@ -97,6 +97,32 @@ class ShiftController extends Controller
         ]);
     }
 
+    public function showInProcessShifts()
+    {
+        $shifts = Shifts::where('status', 'en proceso')
+            ->with(['module', 'user'])
+            ->orderBy('date')
+            ->orderBy('number')
+            ->get();
+
+        return Inertia::render('Shifts/InProcessShifts', [
+            'shifts' => $shifts
+        ]);
+    }
+
+    public function showCalledShifts()
+    {
+        $shifts = Shifts::where('status', 'atendido')
+            ->with(['module', 'user'])
+            ->orderBy('date')
+            ->orderBy('number')
+            ->get();
+
+        return Inertia::render('Shifts/CalledShifts', [
+            'shifts' => $shifts
+        ]);
+    }
+
     private function getPendingAndInProcessShifts()
     {
         return Shifts::whereIn('status', ['espera', 'en proceso'])
@@ -117,19 +143,6 @@ class ShiftController extends Controller
             'muestras' => $firstShifts->get('muestras'),
             'resultados' => $firstShifts->get('resultados')
         ];
-    }
-
-    public function showInProcessShifts()
-    {
-        $shifts = Shifts::where('status', 'en proceso')
-            ->with(['module', 'user'])
-            ->orderBy('date')
-            ->orderBy('number')
-            ->get();
-
-        return Inertia::render('Shifts/InProcessShifts', [
-            'shifts' => $shifts
-        ]);
     }
 
     public function updateShiftStatus(Request $request, Shifts $shift)

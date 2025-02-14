@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ModuleController::class, 'index'])->name('modules.index');
         Route::post('/', [ModuleController::class, 'store'])->name('modules.store');
         Route::put('/{module}', [ModuleController::class, 'update'])->name('modules.update');
+        Route::delete('/{module}', [ModuleController::class, 'destroy'])->name('modules.destroy');
     });
 
     Route::get('/shifts/pending', [ShiftController::class, 'showPendingShifts'])
@@ -48,8 +49,12 @@ Route::middleware('auth')->group(function () {
         ->name('shifts.updateStatus');
 });
 
-// Ruta para invitados
+// Ruta para empleados
 Route::get('/shifts/in-process', [ShiftController::class, 'showInProcessShifts'])
     ->name('shifts.inProcess');
+
+// Ruta para usuarios
+Route::get('/shifts/called', [ShiftController::class, 'showCalledShifts'])
+    ->name('shifts.called');
 
 require __DIR__.'/auth.php';
